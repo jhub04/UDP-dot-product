@@ -45,11 +45,10 @@ class EchoServer {
 
         // Calculate the dot product
         int dp = dotProduct(v1, v2);
-        cout << dp << endl;
+        string dp_str = to_string(dp);
 
-
-        co_await socket.async_send_to(asio::buffer(message, message.length()), endpoint, asio::use_awaitable);
-        cout << "Server: sent: " << message
+        co_await socket.async_send_to(asio::buffer(dp_str, dp_str.length()), endpoint, asio::use_awaitable);
+        cout << "Server: sent: " << dp_str
              << ", to " << endpoint.address() << ":" << endpoint.port() << endl;
     }
 
