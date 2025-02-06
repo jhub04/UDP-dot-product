@@ -17,6 +17,29 @@ int dotProduct(vector<int> v1, vector<int> v2) {
     return result;
 }
 
+pair<vector<int>, vector<int>> parseString(string message) {
+    std::vector<int> v1, v2;
+    std::stringstream ss(message);
+    std::string firstPart, secondPart;
+
+    if (std::getline(ss, firstPart, ';') && std::getline(ss, secondPart)) {
+        std::stringstream firstStream(firstPart);
+        std::stringstream secondStream(secondPart);
+        std::string num;
+
+        while (std::getline(firstStream, num, ',')) {
+            v1.push_back(std::stoi(num));
+        }
+
+        while (std::getline(secondStream, num, ',')) {
+            v2.push_back(std::stoi(num));
+        }
+    };
+
+    return make_pair(v1, v2);
+}
+
+
 class EchoServer {
     asio::ip::udp::socket socket;
 
@@ -25,24 +48,8 @@ class EchoServer {
 
     asio::awaitable<void> handle_request(asio::ip::udp::endpoint endpoint, string message) {
         // Parse the string into two vectors
-        std::vector<int> v1, v2;
-        std::stringstream ss(message);
-        std::string firstPart, secondPart;
 
-        if (std::getline(ss, firstPart, ';') && std::getline(ss, secondPart)) {
-            std::stringstream firstStream(firstPart);
-            std::stringstream secondStream(secondPart);
-            std::string num;
-
-            while (std::getline(firstStream, num, ',')) {
-                v1.push_back(std::stoi(num));
-            }
-
-            while (std::getline(secondStream, num, ',')) {
-                v2.push_back(std::stoi(num));
-            }
-        };
-
+        auto[v1, v2] = parseString(message);
         // Calculate the dot product
         int dp = dotProduct(v1, v2);
         string dp_str = to_string(dp);
