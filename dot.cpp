@@ -24,6 +24,30 @@ class EchoServer {
     EchoServer(asio::io_context &io_context) : socket(io_context, asio::ip::udp::endpoint(asio::ip::udp::v6(), 3000)) {}
 
     asio::awaitable<void> handle_request(asio::ip::udp::endpoint endpoint, string message) {
+        // Parse the string into two vectors
+        std::vector<int> v1, v2;
+        std::stringstream ss(message);
+        std::string firstPart, secondPart;
+
+        if (std::getline(ss, firstPart, ';') && std::getline(ss, secondPart)) {
+            std::stringstream firstStream(firstPart);
+            std::stringstream secondStream(secondPart);
+            std::string num;
+
+            while (std::getline(firstStream, num, ',')) {
+                v1.push_back(std::stoi(num));
+            }
+
+            while (std::getline(secondStream, num, ',')) {
+                v2.push_back(std::stoi(num));
+            }
+        };
+
+        // Calculate the dot product
+        int dp = dotProduct(v1, v2);
+        cout << dp << endl;
+
+
         co_await socket.async_send_to(asio::buffer(message, message.length()), endpoint, asio::use_awaitable);
         cout << "Server: sent: " << message
              << ", to " << endpoint.address() << ":" << endpoint.port() << endl;
@@ -56,7 +80,9 @@ class EchoClient {
                             .begin()
                             ->endpoint();
 
-        std::string message("hello");
+        // Send the vectors
+        //std::string message("hello");
+        std::string message("1,2,3;4,5,6"); // 1*4 + 2*5 + 3*6 = 32
         auto bytes_transferred = co_await socket.async_send_to(asio::buffer(message, message.length()), endpoint, asio::use_awaitable);
         cout << "Client: sent: " << message
              << ", to " << endpoint.address() << ":" << endpoint.port() << endl;
