@@ -7,4 +7,4 @@ if(APPLE)
     include_directories(/usr/local/include /opt/homebrew/include)
 endif()
 
-add_executable(Nettverkprog_mappe main.cpp)
+add_executable(Nettverkprog_mappe dot.cpp)
